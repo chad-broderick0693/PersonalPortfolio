@@ -1,10 +1,20 @@
 import * as THREE from 'three'
 
-export function createSun() {
-  const sunGeometry = new THREE.SphereGeometry(10, 32, 16)
-  const sunMaterial = new THREE.MeshToonMaterial({ color: 0xffd700 })
-  const sun = new THREE.Mesh(sunGeometry, sunMaterial)
-  sun.position.set(100, 50, -500)
+export class Sun {
+  constructor(scene, color = 0xffd700) {
+    this.scene = scene
+    this.mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(10, 32, 16),
+      new THREE.MeshToonMaterial({ color })
+    )
+  }
 
-  return sun
+  setPosition() {
+    this.mesh.position.set(100, 50, -500)
+  }
+
+  createSun() {
+    this.setPosition()
+    this.scene.add(this.mesh)
+  }
 }

@@ -1,18 +1,24 @@
 import * as THREE from 'three'
-import { getRandomNormalizedPosition } from '@/scenes/utils/math'
 
-export function createIsland() {
-  const maxRange = 50 // Adjust this value to fit your scene size
+export class Island {
+  constructor(scene, size = 1, color = 0x4caf50) {
+    this.scene = scene
+    this.mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(size, 32, 16),
+      new THREE.MeshToonMaterial({ color })
+    )
+  }
 
-  const islandGeometry = new THREE.SphereGeometry(1, 32, 16)
-  const islandMaterial = new THREE.MeshToonMaterial({ color: 0x4caf50 })
-  const island = new THREE.Mesh(islandGeometry, islandMaterial)
+  setPosition(position) {
+    this.mesh.position.copy(position)
+  }
 
-  // Get a random normalized position and set the island's position
-  const position = getRandomNormalizedPosition(maxRange)
-  island.position.copy(position)
-  island.castShadow = true
-  island.receiveShadow = true
+  enableShadows(cast = true, receive = true) {
+    this.mesh.castShadow = cast
+    this.mesh.receiveShadow = receive
+  }
 
-  return island
+  addToScene() {
+    this.scene.add(this.mesh)
+  }
 }
