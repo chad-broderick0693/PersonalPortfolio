@@ -8,6 +8,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
+    },
+    {
+      path: '/polyrhythm-visualizer',
+      name: 'polyrhythm-visualizer',
+      component: () => import('@/views/PolyrhythmVisualizer.vue')
     }
   ]
 })
