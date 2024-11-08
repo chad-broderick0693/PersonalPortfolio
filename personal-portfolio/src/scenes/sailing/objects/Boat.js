@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { determineSphericalCoordinates } from '@/scenes/utils/math'
 
 export class Boat {
   constructor(scene, camera) {
@@ -13,7 +14,8 @@ export class Boat {
     this.isDown = false
     this.isLeft = false
     this.isRight = false
-    this.i = 0
+    this.phi = 0
+    this.theta = 0
 
     this.loadModel()
     this.initEventListeners()
@@ -46,8 +48,10 @@ export class Boat {
       }
     })
 
-    this.boat.rotation.y = Math.PI * -0.2
     this.boat.scale.set(0.4, 0.4, 0.4)
+    const newBoatPosition = determineSphericalCoordinates(30, this.phi, this.theta)
+    this.boat.position.copy(newBoatPosition)
+    //this.boat.up.set(0, 1, 0)
   }
 
   initEventListeners() {
@@ -96,32 +100,53 @@ export class Boat {
   update() {
     if (!this.boat) return
 
-    const initialZ = this.boat.position.z
-    const initialX = this.boat.position.x
+    const speed = 0.02
+    const worldUp = new THREE.Vector3(0, 1, 0)
+    const backwardVector = new THREE.Vector3()
+    this.boat.getWorldDirection(backwardVector).normalize()
 
-    if (this.isUp) this.boat.position.z -= 0.05
-    if (this.isDown) this.boat.position.z += 0.05
-    if (this.isLeft) this.boat.position.x -= 0.05
-    if (this.isRight) this.boat.position.x += 0.05
+    const forwardVector = backwardVector.clone().negate().normalize()
+    const leftVector = new THREE.Vector3().crossVectors(worldUp, forwardVector).normalize()
+    const rightVector = leftVector.clone().negate().normalize()
 
-    const deltaZ = initialZ - this.boat.position.z
-    const deltaX = initialX - this.boat.position.x
+    if (this.isUp) this.boat.position.add(forwardVector.clone().multiplyScalar(speed))
+    if (this.isLeft) this.boat.position.add(leftVector.clone().multiplyScalar(speed))
+    if (this.isRight) this.boat.position.add(rightVector.clone().multiplyScalar(speed))
+    if (this.isDown) this.boat.position.add(backwardVector.clone().multiplyScalar(speed))
 
-    if (deltaZ !== 0 || deltaX !== 0) {
-      let targetRotation = Math.atan2(deltaX, deltaZ)
+    // const initialZ = this.boat.position.z
+    // const initialX = this.boat.position.x
 
-      let currentRotation = this.boat.rotation.y
-      let rotationDifference = targetRotation - currentRotation
+    // if (this.isUp) this.boat.position.z -= 0.05
+    // if (this.isDown) this.boat.position.z += 0.05
+    // if (this.isLeft) this.boat.position.x -= 0.05
+    // if (this.isRight) this.boat.position.x += 0.05
 
-      rotationDifference = ((rotationDifference + Math.PI) % (2 * Math.PI)) - Math.PI
+    // const deltaZ = initialZ - this.boat.position.z
+    // const deltaX = initialX - this.boat.position.x
 
-      this.boat.rotation.y = currentRotation + THREE.MathUtils.lerp(0, rotationDifference, 0.05)
-    }
+    // if (deltaZ !== 0 || deltaX !== 0) {
+    //   let targetRotation = Math.atan2(deltaX, deltaZ)
 
-    this.bobAngle += 0.04
-    this.boat.position.y = Math.sin(this.bobAngle) * this.bobAmount
+    //   let currentRotation = this.boat.rotation.y
+    //   let rotationDifference = targetRotation - currentRotation
 
-    this.camera.position.set(this.boat.position.x, 3, this.boat.position.z + 6)
-    this.camera.lookAt(new THREE.Vector3(this.boat.position.x, 0, this.boat.position.z))
+    //   rotationDifference = ((rotationDifference + Math.PI) % (2 * Math.PI)) - Math.PI
+
+    //   this.boat.rotation.y = currentRotation + THREE.MathUtils.lerp(0, rotationDifference, 0.05)
+    // }
+
+    // this.bobAngle += 0.04
+    // this.boat.position.y += Math.sin(this.bobAngle) * this.bobAmount
+
+    console.log(this.boat.position)
+    this.camera.position.set(
+      this.boat.position.x,
+      this.boat.position.y + 3,
+      this.boat.position.z + 15
+    )
+    this.camera.lookAt(
+      new THREE.Vector3(this.boat.position.x, this.boat.position.y, this.boat.position.z)
+    )
   }
 }
