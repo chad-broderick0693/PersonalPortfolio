@@ -1,42 +1,38 @@
 import * as THREE from 'three'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 
 export class Ocean {
-  constructor(scene, color = 0x0077be) {
+  constructor(scene) {
     this.scene = scene
-    this.mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(100, 100),
-      new THREE.MeshToonMaterial({
-        color,
-        side: THREE.DoubleSide
-      })
+    this.loader = new GLTFLoader()
+    this.ocean = null
+    this.loadModel()
+  }
+
+  loadModel() {
+    this.loader.load(
+      '/assets/models/Ocean.glb',
+      (gltf) => {
+        this.ocean = gltf.scene
+        this.scene.add(this.ocean)
+        this.setUpOcean()
+      },
+      undefined,
+      (error) => console.error('An error happened while loading Ocean', error)
     )
   }
 
-  setRotation() {
-    this.mesh.rotation.x = Math.PI * 0.5
+  setUpOcean() {
+    this.ocean.traverse((child) => {
+      if (child.isMesh) {
+        const existingMaterial = child.material
+        child.material = new THREE.MeshToonMaterial({
+          color: existingMaterial.color,
+          map: existingMaterial.map
+        })
+        child.castShadow = true
+        child.receiveShadow = true
+      }
+    })
   }
-
-  enableShadows(cast = false, receive = true) {
-    this.mesh.castShadow = cast
-    this.mesh.receiveShadow = receive
-  }
-
-  addToScene() {
-    this.scene.add(this.mesh)
-  }
-
-  createOcean() {
-    this.setRotation()
-    this.enableShadows()
-    this.addToScene()
-  }
-}
-export function createOcean() {
-  const oceanGeometry = new THREE.PlaneGeometry(100, 100)
-  const oceanMaterial = new THREE.MeshToonMaterial({ color: 0x0077be, side: THREE.DoubleSide })
-  const ocean = new THREE.Mesh(oceanGeometry, oceanMaterial)
-  ocean.receiveShadow = true
-  ocean.rotation.x = Math.PI * 0.5
-
-  return ocean
 }
