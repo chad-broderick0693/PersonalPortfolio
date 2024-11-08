@@ -13,8 +13,7 @@ const boat = new Boat(scene, camera)
 const islandManager = new IslandManager(scene)
 islandManager.createIslands()
 
-const ocean = new Ocean(scene)
-ocean.createOcean()
+new Ocean(scene)
 
 const sunlight = new Sunlight(scene)
 sunlight.createSunlight()
