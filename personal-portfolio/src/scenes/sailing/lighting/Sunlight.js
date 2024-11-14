@@ -20,12 +20,12 @@ export class Sunlight {
   }
 
   update() {
-    // this.angle += this.sunlightSpeed
-    // this.sunlight.position.x = this.radius * Math.cos(this.angle)
-    // this.sunlight.position.y = this.radius * Math.sin(this.angle)
-    // this.sunlight.position.z = 0
-    // this.sunlight.target.position.set(0, 0, 0)
-    // this.sunlight.target.updateMatrixWorld()
+    this.angle += this.sunlightSpeed
+    this.sunlight.position.x = this.radius * Math.cos(this.angle)
+    this.sunlight.position.y = this.radius * Math.sin(this.angle)
+    this.sunlight.position.z = 0
+    this.sunlight.target.position.set(0, 0, 0)
+    this.sunlight.target.updateMatrixWorld()
   }
 
   useSunlightHelper() {

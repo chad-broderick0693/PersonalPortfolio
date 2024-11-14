@@ -23,7 +23,6 @@ sun.createSun()
 
 function animate() {
   boat.update()
-  sunlight.update()
 
   renderer.render(scene, camera)
 }
