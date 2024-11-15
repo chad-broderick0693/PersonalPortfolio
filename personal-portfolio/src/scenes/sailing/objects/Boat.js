@@ -56,7 +56,7 @@ export class Boat {
 
   updateRotation(deltaX, deltaZ) {
     if (deltaZ !== 0 || deltaX !== 0) {
-      let targetRotation = Math.atan2(deltaX, deltaZ)
+      let targetRotation = Math.atan2(-deltaX, -deltaZ)
       let currentRotation = this.boat.rotation.y
       let rotationDifference = targetRotation - currentRotation
 
