@@ -40,7 +40,6 @@ export class Boat {
       }
     })
 
-    this.boat.rotation.y = Math.PI * -0.2
     this.boat.scale.set(0.4, 0.4, 0.4)
   }
 
@@ -49,9 +48,6 @@ export class Boat {
 
     this.boat.position.x += direction.x * this.boatSpeed
     this.boat.position.z += direction.z * this.boatSpeed
-
-    this.bobAngle += 0.04
-    this.boat.position.y = Math.sin(this.bobAngle) * this.bobAmount
   }
 
   updateRotation(deltaX, deltaZ) {
