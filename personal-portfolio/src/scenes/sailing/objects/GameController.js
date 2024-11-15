@@ -68,35 +68,50 @@ export class GameController {
   update() {
     if (!this.boat.boat) return
 
-    let moveX = 0
-    let moveZ = 0
+    let forward = 0
+    let turn = 0
 
-    if (this.isUp) moveZ -= 1
-    if (this.isDown) moveZ += 1
-    if (this.isLeft) moveX -= 1
-    if (this.isRight) moveX += 1
+    if (this.isUp) forward += 1
+    if (this.isDown) forward -= 1
+    if (this.isLeft) turn += 1
+    if (this.isRight) turn -= 1
 
-    const length = Math.sqrt(moveX * moveX + moveZ * moveZ)
-    if (length > 0) {
-      moveX /= length
-      moveZ /= length
-    }
+    const turnSpeed = 0.01
+    const lagSpeed = 0.015
+    this.boat.boat.rotation.y += turn * turnSpeed
 
-    const newPosition = new THREE.Vector3(
-      this.boat.boat.position.x + moveX * this.boat.boatSpeed,
-      this.boat.boat.position.y,
-      this.boat.boat.position.z + moveZ * this.boat.boatSpeed
-    )
+    const forwardVector = new THREE.Vector3(0, 0, -1)
+    forwardVector.applyQuaternion(this.boat.boat.quaternion)
+
+    const movementVector = forwardVector.multiplyScalar(forward * this.boat.boatSpeed)
+
+    const newPosition = new THREE.Vector3().addVectors(this.boat.boat.position, movementVector)
 
     if (this.playAreaBoundary.containsPoint(newPosition)) {
-      this.boat.move({ x: moveX, z: moveZ })
+      this.boat.boat.position.copy(newPosition)
     }
 
-    const deltaX = moveX * this.boat.boatSpeed
-    const deltaZ = moveZ * this.boat.boatSpeed
-    this.boat.updateRotation(deltaX, deltaZ)
+    const bobAmount = 0.05
+    const bobSpeed = 0.02
+    this.boat.bobAngle = (this.boat.bobAngle || 0) + bobSpeed
+    this.boat.boat.position.y = Math.sin(this.boat.bobAngle) * bobAmount
 
-    this.camera.position.set(this.boat.boat.position.x, 3, this.boat.boat.position.z + 6)
-    this.camera.lookAt(new THREE.Vector3(this.boat.boat.position.x, 0, this.boat.boat.position.z))
+    const cameraOffset = new THREE.Vector3(0, 3, 6)
+    const rotatedOffset = cameraOffset.applyQuaternion(this.boat.boat.quaternion)
+    const targetCameraPosition = new THREE.Vector3(
+      this.boat.boat.position.x + rotatedOffset.x,
+      3,
+      this.boat.boat.position.z + rotatedOffset.z
+    )
+
+    this.camera.position.lerp(targetCameraPosition, lagSpeed)
+
+    this.camera.lookAt(
+      new THREE.Vector3(
+        this.boat.boat.position.x,
+        this.boat.boat.position.y,
+        this.boat.boat.position.z
+      )
+    )
   }
 }
