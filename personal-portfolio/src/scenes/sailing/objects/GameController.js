@@ -11,10 +11,12 @@ export class GameController {
     this.isDown = false
     this.isLeft = false
     this.isRight = false
+    this.boundsX = 64
+    this.boundsZ = 61
 
     this.playAreaBoundary = new THREE.Box3(
-      new THREE.Vector3(-50, -2, -50),
-      new THREE.Vector3(50, 10, 50)
+      new THREE.Vector3(-this.boundsX, -2, -this.boundsZ),
+      new THREE.Vector3(this.boundsX, 10, this.boundsZ)
     )
 
     this.initEventListeners()
