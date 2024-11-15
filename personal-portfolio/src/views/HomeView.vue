@@ -1,14 +1,14 @@
 <script setup>
 import { init } from '@/scenes/core/init'
-import { Boat } from '@/scenes/sailing/objects/Boat'
 import { IslandManager } from '@/scenes/sailing/objects/IslandManager'
 import { Ocean } from '@/scenes/sailing/objects/Ocean'
 import { Sun } from '@/scenes/sailing/objects/Sun'
 import { Sunlight } from '@/scenes/sailing/lighting/Sunlight'
+import { GameController } from '@/scenes/sailing/objects/GameController'
 
 const { scene, camera, renderer } = init()
 
-const boat = new Boat(scene, camera)
+const gameController = new GameController(scene, camera)
 
 const islandManager = new IslandManager(scene)
 islandManager.createIslands()
@@ -22,7 +22,7 @@ const sun = new Sun(scene)
 sun.createSun()
 
 function animate() {
-  boat.update()
+  gameController.update()
 
   renderer.render(scene, camera)
 }
