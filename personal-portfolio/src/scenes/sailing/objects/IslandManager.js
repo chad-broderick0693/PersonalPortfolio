@@ -1,4 +1,4 @@
-import { Island } from './island'
+import { Island } from './Island'
 import { getRandomNormalizedPosition } from '@/scenes/utils/math'
 
 export class IslandManager {
